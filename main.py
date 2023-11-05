@@ -5,6 +5,7 @@ import logging
 import threading
 from contextlib import asynccontextmanager
 import model
+import session
 
 # Add logger
 logger = logging.getLogger(__name__)
@@ -43,3 +44,11 @@ def read_scoring():
 @app.get("/telemetry/")
 def read_telemetry():
     return model.rF2Telemetry.build(info.rf2Tele)
+
+@app.get("/running/")
+def running():
+    return { "active": not info._paused }
+
+@app.get("/session/")
+def read_session():
+    return session.Session(model.rF2Scoring.build(info.rf2Scor), not info._paused)

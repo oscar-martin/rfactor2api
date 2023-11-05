@@ -62,7 +62,6 @@ class CDataJSONEncoder(JSONEncoder):
         if isinstance(obj, bytes):
             return Cbytestring2Python(obj)
 
-
         return JSONEncoder.default(self, obj)
     
 class rF2GamePhase(Enum):
@@ -202,7 +201,7 @@ class rF2VehicleTelemetry(BaseModel):
     mLapNumber: Optional[int] = None  # current lap number
     mLapStartET: Optional[float] = None  # time this lap was started
     mVehicleName: Optional[bytes] = None  # current vehicle name
-    mTrackName: Optional[Optional[bytes]] = None  # current track name
+    mTrackName: Optional[bytes] = None  # current track name
 
     # Position and derivatives
     mPos: Optional[rF2Vec3] = None  # world position in meters
