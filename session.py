@@ -2,6 +2,7 @@ import model
 from pydantic import BaseModel
 from typing import List, Optional
 from enum import Enum
+import math
 
 unknown = "desconocido"
 
@@ -51,8 +52,9 @@ class Player(BaseModel):
     currentSector1: Optional[float] = None  # current sector 1 if valid
     currentSector2: Optional[float] = None  # current sector 2 if valid
     currentLapTime: Optional[float] = None
+    speed: Optional[float] = None
 
-    def __init__(self, vehicle: model.rF2VehicleScoring):
+    def __init__(self, vehicle: model.rF2VehicleScoring, currentET: float):
         super().__init__()
         self.driveName = vehicle.mDriverName
         self.vehicleName = vehicle.mVehicleName
@@ -72,7 +74,11 @@ class Player(BaseModel):
         self.lastLapTime = vehicle.mLastLapTime
         self.currentSector1 = vehicle.mCurSector1
         self.currentSector2 = vehicle.mCurSector2
-        self.currentLapTime = vehicle.mLapStartET
+        self.currentLapTime = currentET - vehicle.mLapStartET
+        mps = math.sqrt(math.pow(vehicle.mLocalVel.x, 2) +
+                  math.pow(vehicle.mLocalVel.y, 2) +
+                  math.pow(vehicle.mLocalVel.z, 2))
+        self.speed = mps*3.6
 
 class Session(BaseModel):
     active: bool = False
@@ -101,5 +107,5 @@ class Session(BaseModel):
         self.maxPathWetness = scoring.mScoringInfo.mMaxPathWetness
     
         for i in range(scoring.mScoringInfo.mNumVehicles):
-            self.players.append(Player(scoring.mVehicles[i]))
+            self.players.append(Player(scoring.mVehicles[i], scoring.mScoringInfo.mCurrentET))
 
